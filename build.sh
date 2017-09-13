@@ -47,7 +47,7 @@ if [ "$platform" = "Linux" ]; then
   install_dir=${working_dir}/musl-install
 
   pushd musl-${musl_version}
-  ./configure --prefix=${install_dir}
+  env CFLAGS='-Os -ffunction-sections -fdata-sections' LDFLAGS='-Wl --gc-sections' ./configure --prefix=${install_dir}
   make install
   popd # musl-${musl-version}
 
@@ -72,7 +72,8 @@ if [ ! -d releases ]; then
   mkdir releases
 fi
 
+echo "= stripping bash binary"
+strip -s -R .comment -R .gnu.version --strip-unneeded releases/bash
 echo "= extracting bash binary"
 cp build/bash-${bash_version}/bash releases
-
 echo "= done"

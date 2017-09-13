@@ -64,7 +64,6 @@ echo "= building bash"
 pushd bash-${bash_version}
 CFLAGS="$CFLAGS -Os" ./configure --without-bash-malloc
 make
-make tests
 popd # bash-${bash_version}
 
 popd # build

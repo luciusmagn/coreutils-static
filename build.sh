@@ -47,7 +47,7 @@ if [ "$platform" = "Linux" ]; then
   install_dir=${working_dir}/musl-install
 
   pushd musl-${musl_version}
-  env CFLAGS='-Os -ffunction-sections -fdata-sections' LDFLAGS='-Wl --gc-sections' ./configure --prefix=${install_dir}
+  env CFLAGS='$CFLAGS -Os -ffunction-sections -fdata-sections' LDFLAGS='-Wl,--gc-sections' ./configure --prefix=${install_dir}
   make install
   popd # musl-${musl-version}
 
@@ -62,7 +62,7 @@ fi
 echo "= building bash"
 
 pushd bash-${bash_version}
-CFLAGS="$CFLAGS -Os" ./configure --without-bash-malloc
+env CFLAGS="$CFLAGS -Os -ffunction-sections -fdata-sections" LDFLAGS='-Wl,--gc-sections' ./configure --without-bash-malloc
 make
 popd # bash-${bash_version}
 

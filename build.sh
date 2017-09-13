@@ -47,7 +47,7 @@ if [ "$platform" = "Linux" ]; then
   install_dir=${working_dir}/musl-install
 
   pushd musl-${musl_version}
-  env CFLAGS='$CFLAGS -Os -ffunction-sections -fdata-sections' LDFLAGS='-Wl,--gc-sections' ./configure --prefix=${install_dir}
+  env CFLAGS="$CFLAGS -Os -ffunction-sections -fdata-sections" LDFLAGS='-Wl,--gc-sections' ./configure --prefix=${install_dir}
   make install
   popd # musl-${musl-version}
 
@@ -62,7 +62,7 @@ fi
 echo "= building bash"
 
 pushd bash-${bash_version}
-env CFLAGS="$CFLAGS -Os -ffunction-sections -fdata-sections" LDFLAGS='-Wl,--gc-sections' ./configure --without-bash-malloc
+CFLAGS="$CFLAGS -Os -ffunction-sections -fdata-sections" LDFLAGS='-Wl,--gc-sections' ./configure --without-bash-malloc
 make
 popd # bash-${bash_version}
 
@@ -73,7 +73,7 @@ if [ ! -d releases ]; then
 fi
 
 echo "= stripping bash binary"
-strip -s -R .comment -R .gnu.version --strip-unneeded releases/bash
+strip -s -R .comment -R .gnu.version --strip-unneeded build/bash-${bash_version}/bash
 echo "= extracting bash binary"
 cp build/bash-${bash_version}/bash releases
 echo "= done"

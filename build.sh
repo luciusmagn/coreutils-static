@@ -72,8 +72,10 @@ if [ ! -d releases ]; then
   mkdir releases
 fi
 
-echo "= stripping bash binary"
+echo "= striptease"
 strip -s -R .comment -R .gnu.version --strip-unneeded build/bash-${bash_version}/bash
+echo "= compressing"
+upx --ultra-brute build/bash-${bash_version}/bash
 echo "= extracting bash binary"
 cp build/bash-${bash_version}/bash releases
 echo "= done"

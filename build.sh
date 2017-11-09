@@ -1,12 +1,11 @@
 #!/bin/bash
 #
-# build static bash because we need exercises in minimalism
+# build static find because we need exercises in minimalism
 # MIT licensed: google it or see robxu9.mit-license.org.
 #
 # For Linux, also builds musl for truly static linking.
 
-bash_version="4.4"
-bash_patch_level=0
+find_version="4.6.0"
 musl_version="1.1.15"
 
 platform=$(uname -s)
@@ -20,19 +19,11 @@ mkdir build # make build directory
 pushd build
 
 # download tarballs
-echo "= downloading bash"
-curl -LO http://ftp.gnu.org/gnu/bash/bash-${bash_version}.tar.gz
+echo "= downloading find"
+curl -LO http://ftp.gnu.org/gnu/findutils/findutils-${find_version}.tar.gz
 
-echo "= extracting bash"
-tar -xf bash-${bash_version}.tar.gz
-
-echo "= patching bash"
-bash_patch_prefix=$(echo "bash${bash_version}" | sed -e 's/\.//g')
-pushd bash-${bash_version}
-for lvl in $(seq $bash_patch_level); do
-    curl -L http://ftp.gnu.org/gnu/bash/bash-${bash_version}-patches/${bash_patch_prefix}-$(printf '%03d' $lvl) | patch -p0
-done
-popd
+echo "= extracting find"
+tar -xf findutils-${find_version}.tar.gz
 
 if [ "$platform" = "Linux" ]; then
   echo "= downloading musl"
@@ -59,12 +50,12 @@ else
   echo "= (This is mainly due to non-static libc availability.)"
 fi
 
-echo "= building bash"
+echo "= building find"
 
-pushd bash-${bash_version}
+pushd findutils-${find_version}
 CFLAGS="$CFLAGS -Os -ffunction-sections -fdata-sections" LDFLAGS='-Wl,--gc-sections' ./configure --without-bash-malloc
 make
-popd # bash-${bash_version}
+popd # find-${find_version}
 
 popd # build
 
@@ -73,9 +64,9 @@ if [ ! -d releases ]; then
 fi
 
 echo "= striptease"
-strip -s -R .comment -R .gnu.version --strip-unneeded build/bash-${bash_version}/bash
+strip -s -R .comment -R .gnu.version --strip-unneeded build/findutils-${find_version}/find
 echo "= compressing"
-upx --ultra-brute build/bash-${bash_version}/bash
-echo "= extracting bash binary"
-cp build/bash-${bash_version}/bash releases
+upx --ultra-brute build/findutils-${find_version}/find/find
+echo "= extracting find binary"
+cp build/findutils-${find_version}/find/find releases
 echo "= done"
